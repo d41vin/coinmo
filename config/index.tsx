@@ -7,16 +7,28 @@ import {
   scrollSepolia,
 } from "@reown/appkit/networks";
 
-// Get projectId from https://cloud.reown.com
 export const projectId = process.env.NEXT_PUBLIC_REOWN_PROJECT_ID;
 
 if (!projectId) {
   throw new Error("Project ID is not defined");
 }
 
-export const networks = [mainnet, arbitrum, scroll, scrollSepolia];
+// Update RPC URLs for networks
+const networks = [
+  {
+    ...scrollSepolia,
+    rpcUrls: {
+      ...scrollSepolia.rpcUrls,
+      default: {
+        http: ['https://sepolia-rpc.scroll.io'] // Use Scroll's public RPC
+      }
+    }
+  },
+  mainnet,
+  arbitrum,
+  scroll
+];
 
-//Set up the Wagmi Adapter (Config)
 export const wagmiAdapter = new WagmiAdapter({
   storage: createStorage({
     storage: cookieStorage,
