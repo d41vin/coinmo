@@ -1,10 +1,21 @@
-"use client";
+import { getUserByUsername } from "@/lib/db";
+import { notFound } from "next/navigation";
+import { ProfileCard } from "@/components/ProfileCard";
 
 export default async function ProfilePage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { username: string };
 }) {
-  const { slug } = await params;
-  return <div>My Post: {slug} hi yooooooooooooooooooooooo</div>;
+  const user = await getUserByUsername(params.username);
+
+  if (!user) {
+    notFound();
+  }
+
+  return (
+    <div className="mx-auto max-w-screen-sm p-4">
+      <ProfileCard user={user} />
+    </div>
+  );
 }
