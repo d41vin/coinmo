@@ -1,0 +1,11 @@
+﻿packages:
+  - 'nextjs'
+  # - 'contracts'
+
+allowBuilds:
+  sharp: true
+  unrs-resolver: true
+  msw: false
+  esbuild: true
+  protobufjs: true
+  msgpackr-extract: true
