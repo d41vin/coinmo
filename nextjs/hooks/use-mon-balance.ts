@@ -28,9 +28,9 @@ export function useMonBalance(address?: Address) {
         setError(
           caught instanceof Error
             ? caught.message
-            : "Could not read the MON balance from Monad Testnet.",
+            : "Could not read the MON balance from Monad Testnet."
         )
-      },
+      }
     )
 
     return () => {

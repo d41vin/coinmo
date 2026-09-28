@@ -16,7 +16,11 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
@@ -109,7 +113,12 @@ export default function SignInPage() {
                 required
                 disabled={isBusy}
               />
-              <Button type="submit" size="lg" className="h-10 w-full" disabled={isBusy}>
+              <Button
+                type="submit"
+                size="lg"
+                className="h-10 w-full"
+                disabled={isBusy}
+              >
                 {state.status === "sending-code" ? (
                   <Spinner />
                 ) : (

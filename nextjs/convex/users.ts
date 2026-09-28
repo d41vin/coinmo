@@ -25,7 +25,7 @@ function normalizeAddress(address: string): string {
 async function throwIfAddressClaimed(
   ctx: MutationCtx,
   address: string,
-  privyDid: string,
+  privyDid: string
 ) {
   const owner = await ctx.db
     .query("users")

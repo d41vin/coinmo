@@ -16,11 +16,11 @@ function requirePublicEnv(name: string, value: string | undefined) {
 
 const privyAppId = requirePublicEnv(
   "NEXT_PUBLIC_PRIVY_APP_ID",
-  process.env.NEXT_PUBLIC_PRIVY_APP_ID,
+  process.env.NEXT_PUBLIC_PRIVY_APP_ID
 )
 const convexUrl = requirePublicEnv(
   "NEXT_PUBLIC_CONVEX_URL",
-  process.env.NEXT_PUBLIC_CONVEX_URL,
+  process.env.NEXT_PUBLIC_CONVEX_URL
 )
 
 const convex = new ConvexReactClient(convexUrl)

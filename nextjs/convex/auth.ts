@@ -1,4 +1,4 @@
-"use node";
+"use node"
 
 import { v } from "convex/values"
 import { PrivyClient } from "@privy-io/node"

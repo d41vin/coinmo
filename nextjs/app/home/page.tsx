@@ -117,14 +117,20 @@ export default function HomePage() {
                 onClick={handleCopy}
                 aria-label="Copy address"
               >
-                {copied ? <CheckIcon data-slot="icon" /> : <CopyIcon data-slot="icon" />}
+                {copied ? (
+                  <CheckIcon data-slot="icon" />
+                ) : (
+                  <CopyIcon data-slot="icon" />
+                )}
               </Button>
               <a
                 href={`${MONAD_TESTNET_EXPLORER_URL}/address/${walletAddress}`}
                 target="_blank"
                 rel="noreferrer"
                 aria-label="View on explorer"
-                className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
+                className={cn(
+                  buttonVariants({ variant: "ghost", size: "icon" })
+                )}
               >
                 <ExternalLinkIcon data-slot="icon" />
               </a>
@@ -146,7 +152,12 @@ export default function HomePage() {
                 )}
               </span>
             </div>
-            <Button variant="ghost" size="sm" onClick={refresh} disabled={isLoading}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={refresh}
+              disabled={isLoading}
+            >
               {isLoading ? <Spinner /> : <RefreshCwIcon data-slot="icon" />}
               Refresh
             </Button>
