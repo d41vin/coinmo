@@ -1,4 +1,4 @@
-﻿packages:
+packages:
   - 'nextjs'
   # - 'contracts'
 
@@ -9,3 +9,7 @@ allowBuilds:
   esbuild: true
   protobufjs: true
   msgpackr-extract: true
+  '@reown/appkit': true
+  bufferutil: true
+  keccak: true
+  utf-8-validate: true
