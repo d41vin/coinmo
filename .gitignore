@@ -31,12 +31,14 @@ pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 
 /docs/misc.md
+/docs/build_log.md
 
 .qoder
 .vercel
