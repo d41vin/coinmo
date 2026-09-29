@@ -100,8 +100,8 @@ export function TopNav() {
   const { ready, authenticated, user, login } = usePrivy()
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/70 backdrop-blur-xl">
-      <div className="mx-auto flex h-14 w-full max-w-md items-center justify-between px-6">
+    <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/75">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link
           href="/"
           className="font-heading text-base font-semibold tracking-tight"
