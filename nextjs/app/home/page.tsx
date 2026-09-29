@@ -1,20 +1,16 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState } from "react"
 import { usePrivy } from "@privy-io/react-auth"
 import {
   CheckIcon,
   CopyIcon,
   ExternalLinkIcon,
-  LogOutIcon,
   RefreshCwIcon,
-  WalletIcon,
 } from "lucide-react"
 import type { Address } from "viem"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
   Card,
@@ -23,6 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { RequireAuth } from "@/components/require-auth"
 import { Spinner } from "@/components/ui/spinner"
 import { useMonBalance } from "@/hooks/use-mon-balance"
 import { MONAD_TESTNET_EXPLORER_URL } from "@/lib/chain"
@@ -33,31 +30,33 @@ const monFormatter = new Intl.NumberFormat(undefined, {
 })
 
 export default function HomePage() {
-  const router = useRouter()
-  const { ready, authenticated, user, logout } = usePrivy()
+  return (
+    <RequireAuth>
+      <WalletCard />
+    </RequireAuth>
+  )
+}
+
+/**
+ * Account data only. Authentication actions live in the top navigation, and
+ * RequireAuth above guarantees an authenticated user is present.
+ */
+function WalletCard() {
+  const { user } = usePrivy()
   const [copied, setCopied] = useState(false)
 
   const walletAddress = user?.wallet?.address as Address | undefined
   const { balance, formatted, error, isLoading, refresh } =
     useMonBalance(walletAddress)
 
-  useEffect(() => {
-    if (ready && !authenticated) {
-      router.replace("/sign-in")
-    }
-  }, [ready, authenticated, router])
-
-  if (!ready || !authenticated || !user || !walletAddress) {
+  // A brand-new email account can be authenticated a moment before its
+  // embedded wallet exists, so keep showing the loading state until it lands.
+  if (!user || !walletAddress) {
     return (
-      <main className="flex min-h-svh items-center justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <Spinner className="size-5 text-muted-foreground" />
-      </main>
+      </div>
     )
-  }
-
-  const handleSignOut = async () => {
-    await logout()
-    router.replace("/sign-in")
   }
 
   const handleCopy = async () => {
@@ -67,33 +66,7 @@ export default function HomePage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-svh w-full max-w-md flex-col gap-6 p-6">
-      <header className="flex items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-3">
-          <Avatar size="lg">
-            <AvatarFallback className="bg-primary text-primary-foreground">
-              {user.email ? (
-                user.email.address.charAt(0).toUpperCase()
-              ) : (
-                <WalletIcon className="size-4" />
-              )}
-            </AvatarFallback>
-          </Avatar>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-medium">
-              {user.email?.address ?? "Wallet account"}
-            </p>
-            <p className="truncate font-mono text-xs text-muted-foreground">
-              {user.id}
-            </p>
-          </div>
-        </div>
-        <Button variant="outline" onClick={handleSignOut}>
-          <LogOutIcon data-slot="icon" />
-          Sign out
-        </Button>
-      </header>
-
+    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-6 py-10">
       <Card>
         <CardHeader>
           <CardTitle>Primary wallet</CardTitle>
