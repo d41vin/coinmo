@@ -39,7 +39,7 @@ export function Providers({ children }: { children: ReactNode }) {
       appId={privyAppId}
       config={{
         // Email is the only web2 login method; wallets may still connect, and
-        // injected/external sign-ins are never given an extra embedded wallet.
+        // injected/external wallet logins are never given an embedded wallet.
         loginMethods: ["email", "wallet"],
         supportedChains: [monadTestnet],
         defaultChain: monadTestnet,
