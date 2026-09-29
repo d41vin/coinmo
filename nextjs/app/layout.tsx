@@ -3,6 +3,7 @@
 import "@/styles/globals.css"
 import { Providers } from "@/components/providers"
 import { ThemeProvider } from "@/components/theme-provider"
+import { TopNav } from "@/components/top-nav"
 import { cn } from "@/lib/utils";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'})
@@ -23,9 +24,12 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn("antialiased", fontMono.variable, "font-sans", inter.variable)}
     >
-      <body>
+      <body className="flex min-h-svh flex-col">
         <ThemeProvider>
-          <Providers>{children}</Providers>
+          <Providers>
+            <TopNav />
+            {children}
+          </Providers>
         </ThemeProvider>
       </body>
     </html>
