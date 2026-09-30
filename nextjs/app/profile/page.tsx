@@ -94,14 +94,13 @@ function ProfileContent({ user }: { user: Doc<"users"> }) {
             </div>
           </div>
 
-          <Button
-            className="self-start"
-            render={<Link href="/settings" />}
-            variant="outline"
+          <Link
+            href="/settings"
+            className={cn(buttonVariants({ variant: "outline" }), "self-start")}
           >
             <PencilIcon data-slot="icon" />
             Edit profile
-          </Button>
+          </Link>
         </CardContent>
       </Card>
     </main>

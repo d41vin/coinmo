@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePrivy } from "@privy-io/react-auth"
 
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useCurrentUser } from "@/hooks/use-current-user"
 
@@ -26,17 +26,17 @@ export function LandingCta() {
 
   if (authenticated && user && !user.onboardingComplete) {
     return (
-      <Button size="lg" render={<Link href="/onboarding" />}>
+      <Link href="/onboarding" className={buttonVariants({ size: "lg" })}>
         Resume setup
-      </Button>
+      </Link>
     )
   }
 
   if (authenticated) {
     return (
-      <Button size="lg" render={<Link href="/home" />}>
+      <Link href="/home" className={buttonVariants({ size: "lg" })}>
         Open coinmo
-      </Button>
+      </Link>
     )
   }
 
