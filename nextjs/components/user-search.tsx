@@ -81,6 +81,7 @@ export function UserSearch() {
       <CommandDialog
         aria-label="Find people"
         className="top-0 h-dvh max-w-none translate-y-0 rounded-none sm:top-1/3 sm:h-auto sm:max-w-md sm:rounded-4xl"
+        description="Search coinmo profiles by username or name."
         onOpenChange={handleOpenChange}
         open={open}
         showCloseButton
