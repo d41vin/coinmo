@@ -1,9 +1,19 @@
 "use client"
 
+import * as React from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { usePrivy } from "@privy-io/react-auth"
-import { CopyIcon, ExternalLinkIcon, LogOutIcon } from "lucide-react"
+import { useTheme } from "next-themes"
+import {
+  CopyIcon,
+  ExternalLinkIcon,
+  LogOutIcon,
+  MoonIcon,
+  SettingsIcon,
+  SunIcon,
+  UserIcon,
+} from "lucide-react"
 import type { User } from "@privy-io/react-auth"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -22,6 +32,39 @@ import { MONAD_TESTNET_EXPLORER_URL } from "@/lib/chain"
 
 function truncateAddress(address: string) {
   return `${address.slice(0, 6)}…${address.slice(-4)}`
+}
+
+/**
+ * One-tap light/dark switch for the header. The three-way Light/Dark/System
+ * control lives on the settings page; this is the quick toggle only.
+ */
+function ThemeToggle() {
+  const { resolvedTheme, setTheme } = useTheme()
+  // The resolved theme is unknown until after hydration, so a neutral icon is
+  // rendered first to keep the server and client markup identical.
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const isDark = mounted && resolvedTheme === "dark"
+  const ariaLabel = mounted
+    ? isDark
+      ? "Switch to light theme"
+      : "Switch to dark theme"
+    : "Toggle theme"
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      aria-label={ariaLabel}
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+    >
+      {isDark ? <MoonIcon /> : <SunIcon />}
+    </Button>
+  )
 }
 
 function AccountMenu({ user }: { user: User }) {
@@ -62,7 +105,18 @@ function AccountMenu({ user }: { user: User }) {
               </span>
             )}
           </DropdownMenuLabel>
+
+          <DropdownMenuItem render={<Link href="/profile" />}>
+            <UserIcon />
+            Profile
+          </DropdownMenuItem>
+          <DropdownMenuItem render={<Link href="/settings" />}>
+            <SettingsIcon />
+            Settings
+          </DropdownMenuItem>
         </DropdownMenuGroup>
+
+        <DropdownMenuSeparator />
 
         {address && (
           <>
@@ -104,7 +158,7 @@ export function TopNav() {
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/75">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-4 px-4 sm:px-6">
         <Link
           href="/"
           className="font-heading text-base font-semibold tracking-tight"
@@ -112,15 +166,19 @@ export function TopNav() {
           coinmo
         </Link>
 
-        {!ready ? (
-          <Skeleton className="h-7 w-28 rounded-2xl" />
-        ) : authenticated && user ? (
-          <AccountMenu user={user} />
-        ) : (
-          <Button variant="default" size="sm" onClick={() => login()}>
-            Sign in
-          </Button>
-        )}
+        <div className="ml-auto flex items-center gap-1.5">
+          <ThemeToggle />
+
+          {!ready ? (
+            <Skeleton className="h-7 w-28 rounded-2xl" />
+          ) : authenticated && user ? (
+            <AccountMenu user={user} />
+          ) : (
+            <Button variant="default" size="sm" onClick={() => login()}>
+              Sign in
+            </Button>
+          )}
+        </div>
       </div>
     </header>
   )
