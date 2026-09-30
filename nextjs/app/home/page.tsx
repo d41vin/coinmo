@@ -292,10 +292,17 @@ function BalanceCard({
   const { formatted, error, isLoading, refresh } = useMonBalance(walletAddress)
   const greeting = useGreeting()
   return (
-    <Card className="border-0 bg-secondary text-secondary-foreground shadow-lg ring-1 ring-foreground/5">
-      <CardContent className="p-6 sm:p-7">
+    <Card className="relative overflow-hidden border-0 bg-secondary text-secondary-foreground shadow-lg ring-1 ring-foreground/5">
+      <HandCoinsIcon
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-8 -bottom-12 size-48 rotate-12 opacity-[0.06]"
+      />
+      <CardContent className="relative p-6 sm:p-7">
         <p className="text-sm text-secondary-foreground/75">
-          {greeting}, <span className="font-semibold">{displayName}</span>
+          {greeting},{" "}
+          <span className="greeting-name-gradient font-semibold">
+            {displayName}
+          </span>
         </p>
         <div className="mt-5">
           <div className="flex items-center justify-between gap-3">
