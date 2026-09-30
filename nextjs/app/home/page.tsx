@@ -5,7 +5,7 @@ import {
   ArrowDownLeftIcon,
   ArrowUpRightIcon,
   CalendarClockIcon,
-  CircleDollarSignIcon,
+  HandCoinsIcon,
   Link2Icon,
   MoreHorizontalIcon,
   PinIcon,
@@ -105,7 +105,7 @@ const moreActions: Action[] = [
     label: "Claim link",
     title: "Create a claim link",
     description: "Create a link for someone to claim a payment.",
-    icon: CircleDollarSignIcon,
+    icon: HandCoinsIcon,
   },
   {
     id: "schedule-payment",
