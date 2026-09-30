@@ -251,9 +251,6 @@ function PinnedActions({
   }
   return (
     <div className="space-y-2">
-      <p className="text-xs font-medium tracking-[0.16em] text-muted-foreground uppercase">
-        Pinned shortcuts
-      </p>
       {rows.map((row, index) =>
         row.length === 4 ? (
           <div className="grid grid-cols-4 gap-2 sm:gap-3" key={`row-${index}`}>
