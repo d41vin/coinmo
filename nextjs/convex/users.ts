@@ -5,6 +5,7 @@ import type { Doc, Id } from "./_generated/dataModel"
 import schema from "./schema"
 import {
   displayNameError,
+  isValidUsername,
   normalizeUsername,
   usernameError,
 } from "./lib/username"
@@ -306,5 +307,144 @@ export const removeAvatar = mutation({
     await ctx.db.replace("users", user._id, withoutAvatar)
 
     return { previousAvatarKey }
+  },
+})
+
+/** Fields a search result or public profile may expose: identity only, never
+ * the email or the Privy DID behind the row. */
+const publicProfileFields = {
+  displayName: v.string(),
+  username: v.string(),
+  avatarUrl: v.optional(v.string()),
+}
+
+/**
+ * How many people a single search may return. Enough to fill the dialog
+ * without inviting a scan of anything near the whole table.
+ */
+const MAX_SEARCH_RESULTS = 8
+
+/**
+ * The public card for one handle, readable by any signed-in account with a
+ * finished profile. Returns `null` rather than throwing for anything that does
+ * not exist as a public profile: an unknown handle, a malformed one, and a
+ * half-created row all render the same not-found state. Only identity fields
+ * leave this function, and `isOwner` lets the page label your own card without
+ * leaking which row the caller owns to anyone else.
+ */
+export const publicProfile = query({
+  args: { username: v.string() },
+  returns: v.nullable(
+    v.object({
+      ...publicProfileFields,
+      address: v.string(),
+      isOwner: v.boolean(),
+    })
+  ),
+  handler: async (ctx, args) => {
+    const username = normalizeUsername(args.username)
+    if (!isValidUsername(username)) return null
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_username", (q) => q.eq("username", username))
+      .unique()
+    if (
+      user === null ||
+      !user.onboardingComplete ||
+      !user.displayName ||
+      !user.username
+    ) {
+      return null
+    }
+
+    const identity = await ctx.auth.getUserIdentity()
+    const viewer =
+      identity === null ? null : await userByDid(ctx, identity.subject)
+
+    return {
+      displayName: user.displayName,
+      username: user.username,
+      avatarUrl: user.avatarUrl,
+      address: user.address,
+      isOwner: viewer?._id === user._id,
+    }
+  },
+})
+
+/**
+ * Typeahead behind the header search. Gated on a signed-in identity with a
+ * completed profile, because it exists only to route people between each
+ * other and an anonymous search endpoint would just be a directory scraper's
+ * friend.
+ *
+ * An exact handle is pinned first even though the text indexes should also
+ * find it: full-text matching tokenizes, so "ada" would not reliably return
+ * the handle `ada_l` by relevance alone. The two indexes are queried in
+ * parallel and merged by `_id`, so one person never appears twice.
+ */
+export const searchPublicProfiles = query({
+  args: { query: v.string() },
+  returns: v.array(v.object(publicProfileFields)),
+  handler: async (ctx, args) => {
+    const privyDid = await requireUserIdentity(ctx)
+    const viewer = await userByDid(ctx, privyDid)
+    if (!viewer?.onboardingComplete) {
+      throw new Error("Finish setting up your profile to search")
+    }
+
+    const searchTerm = normalizeUsername(args.query).replace(/^@+/, "")
+    if (searchTerm.length < 2 || searchTerm.length > 80) return []
+
+    const [exactUsername, usernameMatches, displayNameMatches] =
+      await Promise.all([
+        ctx.db
+          .query("users")
+          .withIndex("by_username", (q) => q.eq("username", searchTerm))
+          .unique(),
+        ctx.db
+          .query("users")
+          .withSearchIndex("search_username", (q) =>
+            q.search("username", searchTerm).eq("onboardingComplete", true)
+          )
+          .take(MAX_SEARCH_RESULTS),
+        ctx.db
+          .query("users")
+          .withSearchIndex("search_display_name", (q) =>
+            q.search("displayName", searchTerm).eq("onboardingComplete", true)
+          )
+          .take(MAX_SEARCH_RESULTS),
+      ])
+
+    const results: Array<{
+      displayName: string
+      username: string
+      avatarUrl?: string
+    }> = []
+    const seen = new Set<Id<"users">>()
+    for (const user of [
+      exactUsername,
+      ...usernameMatches,
+      ...displayNameMatches,
+    ]) {
+      if (
+        user === null ||
+        seen.has(user._id) ||
+        !user.onboardingComplete ||
+        !user.displayName ||
+        !user.username
+      ) {
+        continue
+      }
+      seen.add(user._id)
+      results.push({
+        displayName: user.displayName,
+        username: user.username,
+        avatarUrl: user.avatarUrl,
+      })
+      if (results.length === MAX_SEARCH_RESULTS) break
+    }
+
+    return results
   },
 })
