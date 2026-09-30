@@ -153,7 +153,7 @@ function ActionTile({
   return (
     <Button
       aria-label={action.title}
-      className="h-auto min-h-23 flex-col gap-2 rounded-3xl bg-primary px-2 py-3 text-primary-foreground shadow-sm hover:bg-primary/90"
+      className="h-auto min-h-23 w-full flex-col gap-2 rounded-3xl bg-primary px-2 py-3 text-primary-foreground shadow-sm hover:bg-primary/90"
       onClick={onClick}
       type="button"
     >
