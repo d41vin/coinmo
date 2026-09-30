@@ -49,6 +49,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Spinner } from "@/components/ui/spinner"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { useMonBalance } from "@/hooks/use-mon-balance"
 import { useMounted } from "@/hooks/use-mounted"
@@ -342,23 +343,46 @@ function ActivitySection() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Activity</CardTitle>
+        <CardTitle>Keep up with your circle</CardTitle>
         <CardDescription>
-          Your payments and requests will show up here.
+          See what is happening or catch up with the people you know.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Empty className="min-h-60 border-dashed">
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <ReceiptTextIcon />
-            </EmptyMedia>
-            <EmptyTitle>No activity yet</EmptyTitle>
-            <EmptyDescription>
-              When a payment, request, or link goes through, it lands here.
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
+        <Tabs defaultValue="activity">
+          <TabsList className="w-full">
+            <TabsTrigger value="activity">Activity</TabsTrigger>
+            <TabsTrigger value="friends">Friends</TabsTrigger>
+          </TabsList>
+          <TabsContent className="pt-4" value="activity">
+            <Empty className="min-h-60 border-dashed">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <ReceiptTextIcon />
+                </EmptyMedia>
+                <EmptyTitle>No activity yet</EmptyTitle>
+                <EmptyDescription>
+                  Payments, splits, and requests you send or receive on coinmo
+                  will appear here.
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          </TabsContent>
+          <TabsContent className="pt-4" value="friends">
+            <Empty className="min-h-60 border-dashed">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <UsersRoundIcon />
+                </EmptyMedia>
+                <EmptyTitle>Your circle starts here</EmptyTitle>
+                <EmptyDescription>
+                  Add friends to start sending and splitting with them on
+                  coinmo.
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          </TabsContent>
+        </Tabs>
       </CardContent>
     </Card>
   )
