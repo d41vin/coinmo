@@ -1,6 +1,6 @@
 "use client"
 
-import { useSyncExternalStore, useState } from "react"
+import { useState } from "react"
 import {
   ArrowDownLeftIcon,
   ArrowUpRightIcon,
@@ -51,6 +51,7 @@ import {
 import { Spinner } from "@/components/ui/spinner"
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { useMonBalance } from "@/hooks/use-mon-balance"
+import { useMounted } from "@/hooks/use-mounted"
 
 type Action = {
   description: string
@@ -126,18 +127,12 @@ const monFormatter = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 4,
 })
 
-const emptySubscribe = () => () => {}
-
 /**
  * The hour is only knowable in the browser, so the server and the first
  * client render share a neutral greeting until the tree has mounted.
  */
 function useGreeting() {
-  const mounted = useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false
-  )
+  const mounted = useMounted()
 
   if (!mounted) return "Welcome back"
 

@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { usePrivy } from "@privy-io/react-auth"
@@ -28,6 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useMounted } from "@/hooks/use-mounted"
 import { MONAD_TESTNET_EXPLORER_URL } from "@/lib/chain"
 
 function truncateAddress(address: string) {
@@ -42,11 +42,7 @@ function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme()
   // The resolved theme is unknown until after hydration, so a neutral icon is
   // rendered first to keep the server and client markup identical.
-  const [mounted, setMounted] = React.useState(false)
-
-  React.useEffect(() => {
-    setMounted(true)
-  }, [])
+  const mounted = useMounted()
 
   const isDark = mounted && resolvedTheme === "dark"
   const ariaLabel = mounted
