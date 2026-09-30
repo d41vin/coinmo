@@ -42,7 +42,7 @@ export const syncUser = action({
       privyDid: claims.user_id,
       address: args.profile.address,
       email: args.profile.email,
-      name: args.profile.name,
+      displayName: args.profile.name,
     })
   },
 })

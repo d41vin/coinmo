@@ -5,7 +5,7 @@ import schema from "./schema"
 
 const profileFields = {
   privyDid: v.string(),
-  name: v.optional(v.string()),
+  displayName: v.optional(v.string()),
   email: v.optional(v.string()),
   address: v.string(),
 }
@@ -47,7 +47,9 @@ export const upsert = internalMutation({
     // Only carry over fields the client actually knows, so a later sync can't
     // wipe data an earlier one filled in.
     const profile = {
-      ...(args.name !== undefined ? { name: args.name } : {}),
+      ...(args.displayName !== undefined
+        ? { displayName: args.displayName }
+        : {}),
       ...(args.email !== undefined ? { email: args.email } : {}),
     }
 
@@ -72,6 +74,8 @@ export const upsert = internalMutation({
       await ctx.db.insert("users", {
         privyDid: args.privyDid,
         address,
+        // Every account starts un-onboarded; setup claims the name and handle.
+        onboardingComplete: false,
         createdAt: now,
         updatedAt: now,
         ...profile,
