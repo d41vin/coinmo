@@ -38,7 +38,7 @@ export const monadTestnet = defineChain({
 
 export const MONAD_TESTNET_CHAIN_ID = monadTestnet.id
 
-/** Circle testnet USDC deployed on Monad Testnet. */
+/** The USDC token contract deployed on Monad Testnet. */
 export const USDC_ADDRESS: Address =
   "0x534b2f3A21130d7a60830c2Df862319e593943A3"
 
