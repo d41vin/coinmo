@@ -234,8 +234,12 @@ function MoreActionsTile({
 /**
  * Pinned tiles fill rows of up to four. A complete row reuses the primary
  * row's edge-to-edge four-column grid; any partial row is centered, so the
- * fifth pin starts a fresh centered row instead of trailing a gap.
+ * fifth pin starts a fresh centered row instead of trailing a gap. Partial
+ * tiles keep the primary column width: (100% - 3 * gap) / 4, i.e. 25% minus
+ * three quarters of the gap, which is 0.5rem below `sm` and 0.75rem above it.
  */
+const partialRowTile = "w-[calc(25%-0.375rem)] sm:w-[calc(25%-0.5625rem)]"
+
 function PinnedActions({
   actions,
   onOpenAction,
@@ -270,10 +274,7 @@ function PinnedActions({
             key={`row-${index}`}
           >
             {row.map((action) => (
-              <div
-                className="w-[calc(25%-0.5rem)] sm:w-[calc(25%-0.75rem)]"
-                key={action.id}
-              >
+              <div className={partialRowTile} key={action.id}>
                 <ActionTile
                   action={action}
                   onClick={() => onOpenAction(action)}
@@ -370,8 +371,9 @@ function HomeComponent() {
   // saving them to the profile comes in a later phase.
   const [pinnedIds, setPinnedIds] = useState<string[]>([])
 
-  // `RequireAuth` guarantees the mirrored profile exists by this point.
-  const walletAddress = profile?.address as Address
+  // `RequireAuth` renders its children only once the mirrored profile exists,
+  // but this read can still be in flight for a frame, so stay optional.
+  const walletAddress = profile?.address as Address | undefined
   const displayName = profile?.displayName ?? "there"
   const pinnedActions = moreActions.filter((action) =>
     pinnedIds.includes(action.id)
