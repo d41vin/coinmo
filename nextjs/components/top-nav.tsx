@@ -43,14 +43,12 @@ function ThemeToggle() {
   // The resolved theme is unknown until after hydration, so a neutral icon is
   // rendered first to keep the server and client markup identical.
   const mounted = useMounted()
-
   const isDark = mounted && resolvedTheme === "dark"
   const ariaLabel = mounted
     ? isDark
       ? "Switch to light theme"
       : "Switch to dark theme"
     : "Toggle theme"
-
   return (
     <Button
       variant="ghost"
@@ -75,7 +73,6 @@ function AccountMenu({ user }: { user: User }) {
     await logout()
     router.push("/")
   }
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -90,7 +87,6 @@ function AccountMenu({ user }: { user: User }) {
         </Avatar>
         {address ? truncateAddress(address) : label}
       </DropdownMenuTrigger>
-
       <DropdownMenuContent align="end" className="w-60">
         <DropdownMenuGroup>
           <DropdownMenuLabel className="flex flex-col gap-0.5">
@@ -101,7 +97,6 @@ function AccountMenu({ user }: { user: User }) {
               </span>
             )}
           </DropdownMenuLabel>
-
           <DropdownMenuItem render={<Link href="/profile" />}>
             <UserIcon />
             Profile
@@ -110,35 +105,30 @@ function AccountMenu({ user }: { user: User }) {
             <SettingsIcon />
             Settings
           </DropdownMenuItem>
+          {address && (
+            <>
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(address)}
+              >
+                <CopyIcon />
+                Copy address
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                render={
+                  <a
+                    href={`${MONAD_TESTNET_EXPLORER_URL}/address/${address}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  />
+                }
+              >
+                <ExternalLinkIcon />
+                View on explorer
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuGroup>
-
         <DropdownMenuSeparator />
-
-        {address && (
-          <>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(address)}
-            >
-              <CopyIcon />
-              Copy address
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              render={
-                <a
-                  href={`${MONAD_TESTNET_EXPLORER_URL}/address/${address}`}
-                  target="_blank"
-                  rel="noreferrer"
-                />
-              }
-            >
-              <ExternalLinkIcon />
-              View on explorer
-            </DropdownMenuItem>
-          </>
-        )}
-
-        <DropdownMenuSeparator />
-
         <DropdownMenuItem variant="destructive" onClick={handleLogout}>
           <LogOutIcon />
           Log out
@@ -151,7 +141,6 @@ function AccountMenu({ user }: { user: User }) {
 /** Site header, rendered on every page from the root layout. */
 export function TopNav() {
   const { ready, authenticated, user, login } = usePrivy()
-
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/75">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-4 px-4 sm:px-6">
