@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -52,14 +53,16 @@ function AccountMenu({ user }: { user: User }) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-60">
-        <DropdownMenuLabel className="flex flex-col gap-0.5">
-          <span className="truncate text-foreground">{label}</span>
-          {address && (
-            <span className="font-mono text-[0.7rem]">
-              {truncateAddress(address)}
-            </span>
-          )}
-        </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="flex flex-col gap-0.5">
+            <span className="truncate text-foreground">{label}</span>
+            {address && (
+              <span className="font-mono text-[0.7rem]">
+                {truncateAddress(address)}
+              </span>
+            )}
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
 
         {address && (
           <>
