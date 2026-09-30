@@ -27,6 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Skeleton } from "@/components/ui/skeleton"
+import { UserSearch } from "@/components/user-search"
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { useMounted } from "@/hooks/use-mounted"
 import { MONAD_TESTNET_EXPLORER_URL } from "@/lib/chain"
@@ -147,6 +148,11 @@ function AccountMenu({ user }: { user: User }) {
 /** Site header, rendered on every page from the root layout. */
 export function TopNav() {
   const { ready, authenticated, user, login } = usePrivy()
+  // The search dialog would throw straight into an empty list for a caller
+  // whose session or onboarding is not finished, because the Convex query
+  // enforces both. Only a usable account gets the button.
+  const { user: profile } = useCurrentUser()
+  const canSearch = Boolean(profile?.onboardingComplete)
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/75">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-4 px-4 sm:px-6">
@@ -158,6 +164,8 @@ export function TopNav() {
         </Link>
 
         <div className="ml-auto flex items-center gap-1.5">
+          {canSearch && <UserSearch />}
+
           <ThemeToggle />
 
           {!ready ? (
