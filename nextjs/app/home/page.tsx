@@ -376,8 +376,8 @@ function ActivitySection() {
                 </EmptyMedia>
                 <EmptyTitle>Your circle starts here</EmptyTitle>
                 <EmptyDescription>
-                  Add friends to start sending and splitting with them on
-                  coinmo.
+                  Use the search icon at the top to find people, then add them
+                  as friends.
                 </EmptyDescription>
               </EmptyHeader>
             </Empty>
