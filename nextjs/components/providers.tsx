@@ -1,9 +1,9 @@
 "use client"
 
-import type { ReactNode } from "react"
+import { useCallback, useMemo, type ReactNode } from "react"
 import { useTheme } from "next-themes"
-import { PrivyProvider } from "@privy-io/react-auth"
-import { ConvexProvider, ConvexReactClient } from "convex/react"
+import { PrivyProvider, usePrivy } from "@privy-io/react-auth"
+import { ConvexProviderWithAuth, ConvexReactClient } from "convex/react"
 import { useSyncPrivyUser } from "@/hooks/use-sync-privy-user"
 import { monadTestnet } from "@/lib/chain"
 
@@ -24,6 +24,34 @@ const convexUrl = requirePublicEnv(
 )
 
 const convex = new ConvexReactClient(convexUrl)
+
+/**
+ * Adapts Privy to the interface Convex expects from a third-party identity
+ * provider, so every request carries the Privy access token and
+ * `ctx.auth.getUserIdentity()` resolves inside functions. This is the whole
+ * bridge: no custom endpoint and no token verification of our own.
+ *
+ * Privy refreshes an expired access token on its own and exposes no manual
+ * refresh, so `fetchAccessToken` takes no arguments and simply hands over
+ * whatever `getAccessToken` resolves to (or `null` when signed out).
+ */
+function usePrivyConvexAuth() {
+  const { ready, authenticated, getAccessToken } = usePrivy()
+
+  const fetchAccessToken = useCallback(
+    async () => await getAccessToken(),
+    [getAccessToken]
+  )
+
+  return useMemo(
+    () => ({
+      isLoading: !ready,
+      isAuthenticated: authenticated,
+      fetchAccessToken,
+    }),
+    [ready, authenticated, fetchAccessToken]
+  )
+}
 
 /** Mirrors the Privy session into Convex; renders nothing. */
 function UserIdentitySync() {
@@ -52,10 +80,10 @@ export function Providers({ children }: { children: ReactNode }) {
         },
       }}
     >
-      <ConvexProvider client={convex}>
+      <ConvexProviderWithAuth client={convex} useAuth={usePrivyConvexAuth}>
         {children}
         <UserIdentitySync />
-      </ConvexProvider>
+      </ConvexProviderWithAuth>
     </PrivyProvider>
   )
 }
