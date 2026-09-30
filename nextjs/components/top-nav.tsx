@@ -15,7 +15,7 @@ import {
 } from "lucide-react"
 import type { User } from "@privy-io/react-auth"
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -27,8 +27,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useCurrentUser } from "@/hooks/use-current-user"
 import { useMounted } from "@/hooks/use-mounted"
 import { MONAD_TESTNET_EXPLORER_URL } from "@/lib/chain"
+import { avatarInitials } from "@/lib/profile-photo"
 
 function truncateAddress(address: string) {
   return `${address.slice(0, 6)}…${address.slice(-4)}`
@@ -64,6 +66,7 @@ function ThemeToggle() {
 function AccountMenu({ user }: { user: User }) {
   const router = useRouter()
   const { logout } = usePrivy()
+  const { user: profile } = useCurrentUser()
 
   const address = user.wallet?.address
   const email = user.email?.address
@@ -81,8 +84,11 @@ function AccountMenu({ user }: { user: User }) {
         }
       >
         <Avatar size="sm" className="size-4">
+          {profile?.avatarUrl && <AvatarImage alt="" src={profile.avatarUrl} />}
           <AvatarFallback className="bg-primary text-[0.55rem] text-primary-foreground">
-            {label.charAt(0).toUpperCase()}
+            {profile?.displayName
+              ? avatarInitials(profile.displayName)
+              : label.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
         {address ? truncateAddress(address) : label}
