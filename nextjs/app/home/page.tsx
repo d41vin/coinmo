@@ -150,7 +150,6 @@ function ActionTile({
   onClick: () => void
 }) {
   const Icon = action.icon
-
   return (
     <Button
       aria-label={action.title}
@@ -191,7 +190,6 @@ function MoreActionsTile({
           {moreActions.map((action) => {
             const Icon = action.icon
             const pinned = pinnedActionIds.has(action.id)
-
             return (
               <div className="flex items-center gap-1" key={action.id}>
                 <DropdownMenuItem
@@ -251,7 +249,6 @@ function PinnedActions({
   for (let i = 0; i < actions.length; i += 4) {
     rows.push(actions.slice(i, i + 4))
   }
-
   return (
     <div className="space-y-2">
       <p className="text-xs font-medium tracking-[0.16em] text-muted-foreground uppercase">
@@ -297,7 +294,6 @@ function BalanceCard({
 }) {
   const { formatted, error, isLoading, refresh } = useMonBalance(walletAddress)
   const greeting = useGreeting()
-
   return (
     <Card className="border-0 bg-secondary text-secondary-foreground shadow-lg ring-1 ring-foreground/5">
       <CardContent className="p-6 sm:p-7">
@@ -386,7 +382,6 @@ function HomeComponent() {
         : [...current, action.id]
     )
   }
-
   return (
     <main className="mx-auto min-h-[calc(100svh-4rem)] w-full max-w-2xl p-4 pb-10 sm:p-6">
       <div className="space-y-6">

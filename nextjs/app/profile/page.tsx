@@ -32,7 +32,6 @@ function ProfileContent({ user }: { user: Doc<"users"> }) {
     setCopied(true)
     setTimeout(() => setCopied(false), 1500)
   }
-
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-6 py-10">
       <Card>
@@ -127,7 +126,6 @@ function ProfilePageContent() {
       </main>
     )
   }
-
   return <ProfileContent key={user._id} user={user} />
 }
 
