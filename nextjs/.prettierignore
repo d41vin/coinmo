@@ -5,3 +5,5 @@ node_modules/
 coverage/
 pnpm-lock.yaml
 .pnpm-store/
+# Vendored by `convex codegen`, which has its own formatting.
+convex/_generated/
