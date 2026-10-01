@@ -1,7 +1,5 @@
 import { v } from "convex/values"
-import { MINUTE, RateLimiter } from "@convex-dev/rate-limiter"
 
-import { components } from "./_generated/api"
 import { mutation, query } from "./_generated/server"
 import type { MutationCtx, QueryCtx } from "./_generated/server"
 import type { Doc, Id } from "./_generated/dataModel"
@@ -23,23 +21,6 @@ import { isValidUsername, normalizeUsername } from "./lib/username"
 
 /** How many entries each list read may return before it is truncated. */
 const MAX_LIST_ITEMS = 100
-
-/**
- * Friend request creation shares the one rate-limiter instance the whole app
- * mounts. A token bucket that refills five per minute with a burst of ten
- * mirrors the cadence coinmo already uses for reaching out to another person.
- */
-const rateLimiter = new RateLimiter(
-  (components as { rateLimiter: never }).rateLimiter,
-  {
-    friendRequestSend: {
-      kind: "token bucket",
-      rate: 5,
-      period: MINUTE,
-      capacity: 10,
-    },
-  }
-)
 
 type FriendshipStatus =
   | "not-connected"
@@ -274,13 +255,6 @@ export const sendRequest = mutation({
     if (await exactRequest(ctx, recipient._id, viewer._id)) {
       throw new Error("This person has already sent you a friend request")
     }
-
-    // Charge the throttle only for a request that will actually be written, so
-    // a no-op re-click against an existing connection never burns a token.
-    const limit = await rateLimiter.limit(ctx, "friendRequestSend", {
-      key: viewer._id,
-    })
-    if (!limit.ok) throw new Error("You are sending requests too quickly")
 
     await ctx.db.insert("friendRequests", {
       senderId: viewer._id,
