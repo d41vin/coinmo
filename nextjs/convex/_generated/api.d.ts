@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as friends from "../friends.js";
 import type * as lib_username from "../lib/username.js";
 import type * as users from "../users.js";
 
@@ -18,6 +19,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  friends: typeof friends;
   "lib/username": typeof lib_username;
   users: typeof users;
 }>;
@@ -48,4 +50,6 @@ export declare const internal: FilterApi<
   FunctionReference<any, "internal">
 >;
 
-export declare const components: {};
+export declare const components: {
+  rateLimiter: import("@convex-dev/rate-limiter/_generated/component.js").ComponentApi<"rateLimiter">;
+};
