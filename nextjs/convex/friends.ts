@@ -263,11 +263,6 @@ export const sendRequest = mutation({
     const recipient = await publicUserByUsername(ctx, args.username)
     if (viewer._id === recipient._id) throw new Error("You cannot add yourself")
 
-    const limit = await rateLimiter.limit(ctx, "friendRequestSend", {
-      key: viewer._id,
-    })
-    if (!limit.ok) throw new Error("You are sending requests too quickly")
-
     await assertNoBlock(ctx, viewer._id, recipient._id)
 
     if (await exactFriendship(ctx, viewer._id, recipient._id)) {
@@ -279,6 +274,13 @@ export const sendRequest = mutation({
     if (await exactRequest(ctx, recipient._id, viewer._id)) {
       throw new Error("This person has already sent you a friend request")
     }
+
+    // Charge the throttle only for a request that will actually be written, so
+    // a no-op re-click against an existing connection never burns a token.
+    const limit = await rateLimiter.limit(ctx, "friendRequestSend", {
+      key: viewer._id,
+    })
+    if (!limit.ok) throw new Error("You are sending requests too quickly")
 
     await ctx.db.insert("friendRequests", {
       senderId: viewer._id,
