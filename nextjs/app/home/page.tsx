@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import {
   ArrowDownLeftIcon,
   ArrowUpRightIcon,
@@ -15,8 +16,10 @@ import {
   UsersRoundIcon,
 } from "lucide-react"
 import type { Address } from "viem"
+import { useQuery } from "convex/react"
 
 import { RequireAuth } from "@/components/require-auth"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -50,9 +53,11 @@ import {
 } from "@/components/ui/empty"
 import { Spinner } from "@/components/ui/spinner"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { api } from "@/convex/_generated/api"
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { useMonBalance } from "@/hooks/use-mon-balance"
 import { useMounted } from "@/hooks/use-mounted"
+import { avatarInitials } from "@/lib/profile-photo"
 
 type Action = {
   description: string
@@ -340,6 +345,8 @@ function BalanceCard({
 }
 
 function ActivitySection() {
+  const friends = useQuery(api.friends.list, {})
+
   return (
     <Card>
       <CardHeader>
@@ -369,22 +376,87 @@ function ActivitySection() {
             </Empty>
           </TabsContent>
           <TabsContent className="pt-4" value="friends">
-            <Empty className="min-h-60 border-dashed">
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <UsersRoundIcon />
-                </EmptyMedia>
-                <EmptyTitle>Your circle starts here</EmptyTitle>
-                <EmptyDescription>
-                  Use the search icon at the top to find people, then add them
-                  as friends.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
+            <FriendsPanel friends={friends?.friends} />
           </TabsContent>
         </Tabs>
       </CardContent>
     </Card>
+  )
+}
+
+/**
+ * Compact preview of the friends list on the home tab. Long circles are capped
+ * and handed off to `/friends`, mirroring the full page so the home card never
+ * turns into an unbounded scroll.
+ */
+const FRIENDS_PREVIEW_LIMIT = 8
+
+function FriendsPanel({
+  friends,
+}: {
+  friends:
+    | Array<{ displayName: string; username: string; avatarUrl?: string }>
+    | undefined
+}) {
+  if (friends === undefined) {
+    return (
+      <div className="flex items-center gap-2 py-8 text-sm text-muted-foreground">
+        <Spinner className="size-4" />
+        Loading friends…
+      </div>
+    )
+  }
+
+  if (friends.length === 0) {
+    return (
+      <Empty className="min-h-60 border-dashed">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <UsersRoundIcon />
+          </EmptyMedia>
+          <EmptyTitle>Your circle starts here</EmptyTitle>
+          <EmptyDescription>
+            Use the search icon at the top to find people, then add them as
+            friends.
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    )
+  }
+
+  return (
+    <div className="space-y-2">
+      {friends.slice(0, FRIENDS_PREVIEW_LIMIT).map((friend) => (
+        <Link
+          className="flex items-center gap-3 rounded-3xl border p-3 transition-colors outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/30"
+          href={`/profile/${friend.username}`}
+          key={friend.username}
+        >
+          <Avatar>
+            {friend.avatarUrl ? (
+              <AvatarImage alt="" src={friend.avatarUrl} />
+            ) : null}
+            <AvatarFallback className="bg-primary text-primary-foreground">
+              {avatarInitials(friend.displayName)}
+            </AvatarFallback>
+          </Avatar>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate font-medium">
+              {friend.displayName}
+            </span>
+            <span className="block truncate text-sm text-muted-foreground">
+              @{friend.username}
+            </span>
+          </span>
+          <span className="text-sm text-muted-foreground">View</span>
+        </Link>
+      ))}
+      {friends.length > FRIENDS_PREVIEW_LIMIT ? (
+        <Button className="w-full" render={<Link href="/friends" />}>
+          View all friends
+        </Button>
+      ) : null}
+    </div>
   )
 }
 
