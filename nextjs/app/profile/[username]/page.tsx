@@ -11,6 +11,7 @@ import {
 import { useQuery } from "convex/react"
 
 import { RequireAuth } from "@/components/require-auth"
+import { ProfileActions } from "@/components/profile-actions"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -31,9 +32,9 @@ function truncateAddress(address: string) {
 }
 
 /**
- * Identity-only public card for one handle. The friend/message/block actions
- * deliberately do not exist here yet; this page is a profile, not a control
- * surface.
+ * Public card for one handle. The friendship controls below the identity block
+ * are driven entirely by `friends.relationshipForProfile`, so what you can do
+ * with someone always reflects the real state between your accounts.
  */
 function ProfileContent({ username }: { username: string }) {
   const profile = useQuery(api.users.publicProfile, { username })
@@ -153,6 +154,13 @@ function ProfileContent({ username }: { username: string }) {
                 <ExternalLinkIcon data-slot="icon" />
               </a>
             </div>
+          </div>
+
+          <div className="border-t pt-5">
+            <ProfileActions
+              isOwner={profile.isOwner}
+              username={profile.username}
+            />
           </div>
         </CardContent>
       </Card>
